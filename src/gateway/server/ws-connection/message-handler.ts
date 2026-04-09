@@ -723,6 +723,11 @@ export function attachGatewayWsMessageHandler(params: {
           rejectUnauthorized(authResult);
           return;
         }
+        // Bug fix: ensure token/password auth gets operator.admin scope (issue #50474)
+				if ((authMethod === "token" || authMethod === "password") && !scopes.includes("operator.admin")) {
+					scopes.push("operator.admin");
+					connectParams.scopes = scopes;
+				}
         const sharedGatewaySessionGeneration =
           authMethod === "token" || authMethod === "password"
             ? resolveSharedGatewaySessionGeneration(resolvedAuth)
